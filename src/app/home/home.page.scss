@@ -1,0 +1,50 @@
+#container {
+  margin-top: 5%;
+  display: grid;
+  text-align: center;
+  justify-items: center;
+}
+
+#container strong {
+  font-size: 20px;
+  line-height: 26px;
+  color:#0d3b79;
+}
+.v-container{
+  background:
+    linear-gradient(to right, #0d3b79 4px, transparent 4px) 0 0,
+    linear-gradient(to right, #0d3b79 4px, transparent 4px) 0 100%,
+    linear-gradient(to left, #0d3b79 4px, transparent 4px) 100% 0,
+    linear-gradient(to left, #0d3b79 4px, transparent 4px) 100% 100%,
+    linear-gradient(to bottom, #0d3b79 4px, transparent 4px) 0 0,
+    linear-gradient(to bottom, #0d3b79 4px, transparent 4px) 100% 0,
+    linear-gradient(to top, #0d3b79 4px, transparent 4px) 0 100%,
+    linear-gradient(to top, #0d3b79 4px, transparent 4px) 100% 100%;
+
+  background-repeat: no-repeat;
+  background-size: 20px 20px;
+  margin: 5%;
+}
+
+#container .video{
+  width: 95%;
+  height: 350px;
+}
+
+#container ion-button{
+  --background:#ed8e30;
+  --border-radius: 30px;
+}
+
+#container p{
+  text-align: start;
+    padding-inline-start: 5%;
+    padding-inline-end: 5%;
+    font-size: 17px;
+}
+ion-label{
+  font-size: x-large;
+    letter-spacing: 10px;
+    color: #ed8e30;
+    font-weight: 700;
+}

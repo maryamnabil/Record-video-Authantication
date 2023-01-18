@@ -1,0 +1,83 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title size="large"> Video Life Certificate </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div id="container">
+    <strong>Video KYC for self</strong>
+    <div [ngClass]="{'v-container': isRecording}">
+      <video class="video" #video autoplay [playsInline]="true"></video>
+    </div>
+    <div *ngIf="otp=='' && finishRecording==false">
+      <p style="border-left: 3px solid #ed8e30; margin-inline-start: 10px">
+        When you start recording a system generated 4 digits verification code
+        will be shown
+      </p>
+      <p style="border-left: 3px solid #ed8e30; margin-inline-start: 10px">
+        The current beneficiaries shall loudly read/speak the verification code
+        being shown on the screen
+      </p>
+    </div>
+    <div
+      style="width: -webkit-fill-available; text-align-last: center"
+      *ngIf="otp!='' && finishRecording==false "
+    >
+      <ion-label>{{otp}}</ion-label>
+      <p>Read Code Loudly</p>
+    </div>
+
+    <div *ngIf="!finishRecording" style="text-align-last: center">
+      <ion-button (click)="recordVideo()" [hidden]="isRecording"
+        ><ion-icon style="    color: #51b749;
+        margin-inline-start: 10px;
+        margin-inline-end: 10px;" name="videocam"></ion-icon>Start Recording</ion-button
+      >
+      <ion-button (click)="stopRecord()" [hidden]="!isRecording"
+        ><ion-icon style="    color:red;
+        margin-inline-start: 10px;
+        margin-inline-end: 10px;"  name="stop-circle"></ion-icon> Stop Recording</ion-button
+      >
+      <p *ngIf="isRecording" style="font-size: large; font-weight: bold">00:{{timeleftText}}</p>
+
+    </div>
+    <div
+      style="display: grid; width: 70%; justify-self: center"
+      *ngIf="finishRecording"
+    >
+      <p
+        style="
+          text-align: center;
+          border: 1px solid green;
+          padding: 2%;
+          color: green;
+          font-weight: 700;
+        "
+      >
+        Video Captured &#9745;
+      </p>
+      <ion-button
+      style="
+        --background: transparent;
+        color: #0d3b79;
+        --box-shadow: none;
+        text-decoration: underline;
+      "
+      (click)="playVideo()"
+      >Play Video</ion-button
+    >
+      <ion-button (click)="submitVideo()">Submit</ion-button>
+      <ion-button
+        style="
+          --background: transparent;
+          color: #0d3b79;
+          --box-shadow: none;
+          text-decoration: underline;
+        "
+        (click)="tryAgain()"
+        >Try Again</ion-button
+      >
+    </div>
+  </div>
+</ion-content>

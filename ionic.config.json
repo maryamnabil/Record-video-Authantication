@@ -1,0 +1,7 @@
+{
+  "name": "videoApp",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}
