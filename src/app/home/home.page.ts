@@ -23,6 +23,7 @@ export class HomePage implements OnInit {
   timeleftText="10";
   downloadTimer: string | number | NodeJS.Timeout | undefined;
   buffer:any;
+  stream:any;
   constructor(private platform:Platform,public loadingController: LoadingController,private services:Services,private router:Router,private androidPermissions: AndroidPermissions) {
 this.platform.backButton.subscribeWithPriority(10, () => {
     console.log('Handler was called!');
@@ -37,28 +38,43 @@ this.platform.backButton.subscribeWithPriority(10, () => {
     this.finishRecording=false;
     this.otp="";
     this.base64="";
+    let back =localStorage.getItem("back");
+    if(back=="true")
     this.playscript()
   }
 
   async playscript(){
-    const stream= await navigator.mediaDevices.getUserMedia({
+    console.log("here")
+    await (await navigator.mediaDevices.getUserMedia({
+      video: true, audio: true
+    })).getTracks().forEach((t: { stop: () => void; }) => {
+      console.log(t)
+      t.stop();
+   });
+   console.log("here 1")
+
+    this.stream= await navigator.mediaDevices.getUserMedia({
       video:{
         facingMode:'user',
       },
       audio:true,
       
     });
-    console.log(stream)
-    this.captureElement.nativeElement.srcObject=stream;
+
+    console.log(this.stream)
+    this.captureElement.nativeElement.srcObject=this.stream;
     this.captureElement.nativeElement.muted = true
     const options={mimeType:'video/webm'};
-    this.mediaRecorder= new MediaRecorder(stream,options)
+    this.mediaRecorder= new MediaRecorder(this.stream,options)
     console.log(this.mediaRecorder)
     this.platform.pause.subscribe(() => {
       //Hello pause
       this.captureElement.nativeElement.pause();
       this.captureElement.nativeElement.src = "";
-      stream.getTracks()[0].stop();
+      this.stream.getTracks().forEach((t: { stop: () => void; }) => {
+        t.stop();
+        this.stream.removeTrack(t);
+     });
       console.log("Vid off");
     });
   }
@@ -68,21 +84,18 @@ this.platform.backButton.subscribeWithPriority(10, () => {
     this.captureElement.nativeElement.pause();
     this.captureElement.nativeElement.src = "";
     this.captureElement.nativeElement.srcObject = null; // <-- Un-set the src property *before* revoking the object URL.
-    await (await (navigator.mediaDevices.getUserMedia({
-      video: {
-        facingMode: 'user',
-      },
-      audio: true,
-    }))).getTracks()[0].stop();
-    console.log("Vid off");
+    await this.stream.getTracks().forEach((t: { stop: () => void; }) => {
+      t.stop();
+      this.stream.removeTrack(t);
+   });
   }
     ngOnInit(){
     this.platform.ready().then(()=>{
-      this.androidPermissions.checkPermission(this.androidPermissions.PERMISSION.CAMERA).then(
+      this.androidPermissions.checkPermission( this.androidPermissions.PERMISSION.RECORD_AUDIO).then(
         async result => {console.log('Has permission?',result.hasPermission);
+
         if(result.hasPermission==false){
-          this.androidPermissions.requestPermissions([                    this.androidPermissions.PERMISSION.CAMERA, 
-            this.androidPermissions.PERMISSION.MODIFY_AUDIO_SETTINGS,
+          this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.CAMERA, 
             this.androidPermissions.PERMISSION.RECORD_AUDIO]).then(
             async (res)=>{
               console.log("start")
@@ -93,10 +106,11 @@ this.platform.backButton.subscribeWithPriority(10, () => {
    this.playscript();
         }
   },
-        err => {this.androidPermissions.requestPermission(this.androidPermissions.PERMISSION.CAMERA)}
+        err => {this.androidPermissions.requestPermissions([                    this.androidPermissions.PERMISSION.CAMERA, 
+          this.androidPermissions.PERMISSION.RECORD_AUDIO])}
       );
       
-      this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.CAMERA, this.androidPermissions.PERMISSION.GET_ACCOUNTS]);
+      this.androidPermissions.requestPermissions([this.androidPermissions.PERMISSION.CAMERA, this.androidPermissions.PERMISSION.RECORD_AUDIO]);
 
   
     })
@@ -129,7 +143,6 @@ this.platform.backButton.subscribeWithPriority(10, () => {
       this.downloadTimer = setInterval(() =>{
         if(this.timeleft == 0){
           this.stopRecord();
-          this.finishRecording=true;
         }else{
           this.timeleft -= 1;
           this.timeleftText="0"+this.timeleft;
@@ -159,6 +172,7 @@ this.platform.backButton.subscribeWithPriority(10, () => {
     // this.mediaRecorder=null;
     // this.captureElement.nativeElement.srcObject=null;
     this.isRecording=false;
+    this.finishRecording=true;
     clearInterval(this.downloadTimer);
     this.timeleft=10;
     this.timeleftText="10";
